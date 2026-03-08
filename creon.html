@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Créon Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:    #2A2725;
+      --stone:  #6E6A67;
+      --fog:    #EDEAE7;
+      --white:  #FAFAF8;
+      --accent: #E27F2D;
+      --accent2:#c96b1a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--white);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3.5rem;
+      background: rgba(250,250,248,0.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(42,39,37,0.07);
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; color: var(--ink); letter-spacing: 0.01em;
+    }
+    .logo sup {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.5rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); vertical-align: super; margin-left: 2px;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; font-size: 0.85rem; font-weight: 400;
+      color: var(--stone); letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-pill {
+      background: var(--accent); color: white !important;
+      padding: 0.45rem 1.1rem; border-radius: 2rem;
+      font-weight: 500 !important;
+      transition: background 0.2s !important;
+    }
+    .nav-pill:hover { background: var(--ink) !important; }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      padding: 120px 3.5rem 5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* large background letter */
+    .hero-bg-letter {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-30%, -52%);
+      font-family: 'Playfair Display', serif;
+      font-size: 52vw;
+      font-style: italic;
+      color: rgba(42,39,37,0.025);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+
+    .hero-text { position: relative; z-index: 1; }
+
+    .hero-kicker {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--stone); margin-bottom: 2rem;
+    }
+    .kicker-line { width: 28px; height: 1px; background: var(--accent); }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 5vw, 5rem);
+      font-weight: 400; line-height: 1.08;
+      color: var(--ink); margin-bottom: 1.6rem;
+    }
+    h1 em { font-style: italic; color: var(--accent); }
+
+    .hero-sub {
+      font-size: 1rem; color: var(--stone);
+      line-height: 1.8; max-width: 380px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-ctas { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; border-radius: 3rem;
+      font-size: 0.88rem; font-weight: 500;
+      transition: all 0.22s; letter-spacing: 0.02em;
+    }
+    .btn-dark {
+      background: var(--ink); color: white;
+      padding: 0.8rem 1.8rem;
+    }
+    .btn-dark:hover { background: var(--accent); }
+    .btn-bare {
+      color: var(--stone); font-weight: 400;
+      border-bottom: 1px solid rgba(110,106,103,0.3);
+      border-radius: 0; padding-bottom: 0.1rem;
+    }
+    .btn-bare:hover { color: var(--ink); border-color: var(--ink); }
+
+    /* hero right — floating sticker mockups */
+    .hero-visual { position: relative; z-index: 1; height: 480px; }
+
+    .sticker-float {
+      position: absolute;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 12px 40px rgba(42,39,37,0.12);
+      transition: transform 0.5s ease;
+      cursor: default;
+      user-select: none;
+    }
+    .sticker-float:hover { transform: scale(1.08) rotate(0deg) !important; }
+
+    .sf1 { width:160px; height:160px; background:#FFF3E8; top:20px; left:60px; transform:rotate(-8deg); animation: float1 4s ease-in-out infinite; }
+    .sf2 { width:120px; height:120px; background:#F0EDE8; top:10px; right:40px; transform:rotate(6deg); border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; animation: float2 5s ease-in-out infinite; }
+    .sf3 { width:140px; height:140px; background: var(--ink); top:180px; right:20px; transform:rotate(-4deg); border-radius: 40%; animation: float1 4.5s ease-in-out infinite 0.5s; }
+    .sf4 { width:100px; height:100px; background: var(--accent); bottom:60px; left:20px; transform:rotate(10deg); animation: float2 3.8s ease-in-out infinite 1s; }
+    .sf5 { width:180px; height:180px; background:var(--fog); bottom:20px; right:60px; transform:rotate(-6deg); border-radius:30%; animation: float1 5.5s ease-in-out infinite 0.3s; }
+
+    .sf3 span { color: white; }
+    .sf4 span { color: white; }
+
+    .sf-label {
+      position: absolute; bottom: -1.4rem; left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.62rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--stone); white-space: nowrap;
+    }
+
+    @keyframes float1 {
+      0%,100% { transform: rotate(-8deg) translateY(0); }
+      50%      { transform: rotate(-8deg) translateY(-10px); }
+    }
+    @keyframes float2 {
+      0%,100% { transform: rotate(6deg) translateY(0); }
+      50%      { transform: rotate(6deg) translateY(-14px); }
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      border: none; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(42,39,37,0.1), transparent);
+      margin: 0 3.5rem;
+    }
+
+    /* ─── SECTION BASE ─── */
+    .section { padding: 7rem 3.5rem; }
+
+    .section-label {
+      font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .section-label::before { content:''; width:1.4rem; height:1px; background:var(--accent); }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+      font-weight: 400; line-height: 1.2;
+      color: var(--ink);
+    }
+    h2 em { font-style: italic; color: var(--accent); }
+
+    /* ─── STICKR! ─── */
+    .stickr { background: var(--white); }
+
+    .stickr-top {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: end; margin-bottom: 4rem;
+    }
+    .stickr-top p { color: var(--stone); font-size: 0.97rem; line-height: 1.85; }
+    .stickr-badge {
+      display: inline-block;
+      background: var(--accent); color: white;
+      font-family: 'Playfair Display', serif;
+      font-style: italic; font-size: 1.05rem;
+      padding: 0.3rem 0.9rem; border-radius: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+
+    /* Upload form */
+    .upload-area {
+      background: var(--fog);
+      border: 2px dashed rgba(42,39,37,0.15);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      text-align: center;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+    .upload-area.drag-over {
+      border-color: var(--accent);
+      background: #FFF3E8;
+    }
+    .upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width:100%; height:100%;
+    }
+    .upload-icon { font-size: 2.4rem; margin-bottom: 0.8rem; }
+    .upload-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; color: var(--ink); margin-bottom: 0.4rem;
+    }
+    .upload-sub { font-size: 0.82rem; color: var(--stone); }
+    .upload-formats {
+      display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .fmt-tag {
+      background: white; border: 1px solid rgba(42,39,37,0.1);
+      padding: 0.2rem 0.6rem; border-radius: 0.3rem;
+      font-size: 0.7rem; font-weight: 500; color: var(--stone);
+      letter-spacing: 0.06em;
+    }
+    .upload-preview {
+      margin-top: 1rem; display: none;
+      align-items: center; gap: 0.8rem;
+      background: white; border-radius: 10px;
+      padding: 0.8rem 1rem;
+      border: 1px solid rgba(42,39,37,0.08);
+    }
+    .upload-preview.visible { display: flex; }
+    .preview-thumb {
+      width: 48px; height: 48px; border-radius: 6px;
+      object-fit: cover; background: var(--fog);
+    }
+    .preview-name { font-size: 0.85rem; color: var(--ink); font-weight: 400; }
+    .preview-size { font-size: 0.72rem; color: var(--stone); }
+    .preview-remove {
+      margin-left: auto; background: none; border: none;
+      cursor: pointer; color: var(--stone); font-size: 1.1rem;
+      transition: color 0.2s;
+    }
+    .preview-remove:hover { color: var(--ink); }
+
+    .order-form {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1rem; margin-top: 1.5rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--stone);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--fog);
+      border: 1px solid rgba(42,39,37,0.1);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem; color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .size-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;
+    }
+    .size-opt {
+      background: var(--fog);
+      border: 1.5px solid transparent;
+      border-radius: 10px;
+      padding: 0.6rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .size-opt:hover { border-color: rgba(226,127,45,0.4); }
+    .size-opt.selected { border-color: var(--accent); background: #FFF3E8; }
+    .size-opt input { display: none; }
+    .size-label { font-size: 0.82rem; font-weight: 500; color: var(--ink); }
+    .size-sub { font-size: 0.65rem; color: var(--stone); }
+
+    .finish-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
+    .finish-opt {
+      background: var(--fog);
+      border: 1.5px solid transparent;
+      border-radius: 10px;
+      padding: 0.7rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .finish-opt:hover { border-color: rgba(226,127,45,0.4); }
+    .finish-opt.selected { border-color: var(--accent); background: #FFF3E8; }
+    .finish-opt input { display: none; }
+    .finish-icon { font-size: 1.2rem; margin-bottom: 0.2rem; }
+    .finish-label { font-size: 0.78rem; font-weight: 500; color: var(--ink); }
+    .finish-sub { font-size: 0.62rem; color: var(--stone); }
+
+    .submit-row {
+      display: flex; align-items: center;
+      gap: 1.2rem; margin-top: 1.5rem;
+      grid-column: 1/-1;
+    }
+    .btn-submit {
+      background: var(--accent); color: white;
+      border: none; cursor: pointer;
+      padding: 0.85rem 2rem; border-radius: 3rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem; font-weight: 500;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-submit:hover { background: var(--accent2); transform: translateY(-1px); }
+    .submit-note { font-size: 0.78rem; color: var(--stone); line-height: 1.5; }
+
+    .success-msg {
+      display: none; background: #F0FBF0;
+      border: 1px solid #B0DFB0; border-radius: 14px;
+      padding: 1.5rem 2rem; margin-top: 1.5rem;
+      text-align: center;
+    }
+    .success-msg.visible { display: block; }
+    .success-msg h4 { font-family: 'Playfair Display', serif; color: #2A6B2A; margin-bottom: 0.3rem; font-weight:400; font-size:1.1rem; }
+    .success-msg p { font-size: 0.85rem; color: #4A8B4A; }
+
+    /* stickr layout */
+    .stickr-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .stickr-info { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .info-card {
+      background: var(--fog);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .info-card-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: white; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .info-card h4 {
+      font-size: 0.88rem; font-weight: 500; color: var(--ink); margin-bottom: 0.25rem;
+    }
+    .info-card p { font-size: 0.8rem; color: var(--stone); line-height: 1.6; }
+
+    /* ─── WHAT ELSE WE MAKE ─── */
+    .makes { background: var(--fog); }
+    .makes-header { margin-bottom: 3.5rem; }
+    .makes-header p { color: var(--stone); font-size: 0.95rem; margin-top: 0.8rem; max-width: 500px; line-height: 1.8; }
+
+    .makes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .make-card {
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+    .make-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 50px rgba(42,39,37,0.09);
+    }
+
+    .make-card-top {
+      height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .mc1 { background: linear-gradient(135deg, #F5EFE6, #EDE3D5); }
+    .mc2 { background: linear-gradient(135deg, #E8EFF0, #D5E3E8); }
+    .mc3 { background: linear-gradient(135deg, #F0ECE8, #E5DDD5); }
+    .mc4 { background: linear-gradient(135deg, #2A2725, #4A3F3A); }
+    .mc5 { background: linear-gradient(135deg, #FFF0E5, #FFE0C5); }
+    .mc6 { background: linear-gradient(135deg, #EDEAE7, #DEDAD5); }
+
+    .make-card-body { padding: 1.4rem 1.5rem; }
+    .make-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 400; color: var(--ink);
+      margin-bottom: 0.4rem;
+    }
+    .make-card p { font-size: 0.82rem; color: var(--stone); line-height: 1.65; }
+    .make-card-tag {
+      display: inline-block;
+      background: var(--fog); border-radius: 2rem;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--stone); padding: 0.2rem 0.6rem;
+      margin-top: 0.8rem;
+    }
+
+    /* ─── ABOUT ─── */
+    .about {
+      background: var(--ink);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 0;
+    }
+    .about-text {
+      padding: 7rem 4rem 7rem 3.5rem;
+    }
+    .about-text .section-label { color: rgba(226,127,45,0.9); }
+    .about-text .section-label::before { background: rgba(226,127,45,0.9); }
+    .about-text h2 { color: rgba(237,234,231,0.92); margin-bottom: 1.5rem; }
+    .about-text p {
+      color: rgba(237,234,231,0.45);
+      font-size: 0.95rem; line-height: 1.85;
+      margin-bottom: 1rem;
+    }
+    .about-text p strong { color: rgba(237,234,231,0.75); font-weight: 400; }
+
+    .about-right {
+      background: var(--accent);
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-right::before {
+      content: 'C';
+      position: absolute; top: -2rem; right: -1rem;
+      font-family: 'Playfair Display', serif;
+      font-style: italic; font-size: 18rem;
+      color: rgba(255,255,255,0.08);
+      line-height: 1; pointer-events: none;
+    }
+    .about-quote {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.5rem;
+      color: white;
+      line-height: 1.5;
+      position: relative; z-index: 1;
+    }
+    .about-attr {
+      margin-top: 1rem; font-size: 0.78rem;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      position: relative; z-index: 1;
+    }
+
+    /* ─── CONTACT / FOOTER ─── */
+    .contact-bar {
+      background: var(--white);
+      padding: 4rem 3.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(42,39,37,0.07);
+    }
+    .contact-bar h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; font-weight: 400; color: var(--ink);
+    }
+    .contact-bar h3 em { font-style: italic; color: var(--accent); }
+    .contact-bar p { color: var(--stone); font-size: 0.88rem; margin-top: 0.3rem; }
+
+    footer {
+      background: var(--ink);
+      padding: 2rem 3.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; color: rgba(237,234,231,0.7);
+    }
+    .footer-links { display: flex; gap: 2rem; list-style: none; }
+    .footer-links a {
+      text-decoration: none; font-size: 0.8rem;
+      color: rgba(237,234,231,0.3);
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { font-size: 0.75rem; color: rgba(237,234,231,0.2); }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .hero-text > * {
+      opacity:0; animation: fadeUp 0.65s ease forwards;
+    }
+    .hero-text > *:nth-child(1) { animation-delay:0.1s; }
+    .hero-text > *:nth-child(2) { animation-delay:0.22s; }
+    .hero-text > *:nth-child(3) { animation-delay:0.34s; }
+    .hero-text > *:nth-child(4) { animation-delay:0.46s; }
+    .hero-visual { opacity:0; animation: fadeUp 0.9s ease 0.4s forwards; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Créon<sup>Studio</sup></div>
+  <ul class="nav-links">
+    <li><a href="#stickr">Stickr!</a></li>
+    <li><a href="#makes">What We Make</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#stickr" class="nav-pill">Order Stickers</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-letter">C</div>
+
+  <div class="hero-text">
+    <div class="hero-kicker"><span class="kicker-line"></span> Créon Design Studio</div>
+    <h1>We make<br><em>things.</em><br>Real things.</h1>
+    <p class="hero-sub">Custom stickers, 3D prints, Cricut crafts, packaging and whatever comes next. A one-person studio building a culture of making.</p>
+    <div class="hero-ctas">
+      <a href="#stickr" class="btn btn-dark">Order Custom Stickers ↓</a>
+      <a href="#makes" class="btn btn-bare">See what we make</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="sticker-float sf1"><span>✦</span><div class="sf-label">Custom</div></div>
+    <div class="sticker-float sf2"><span>🎨</span></div>
+    <div class="sticker-float sf3"><span>📦</span><div class="sf-label" style="color:rgba(237,234,231,0.5)">Packaged</div></div>
+    <div class="sticker-float sf4"><span>⚡</span></div>
+    <div class="sticker-float sf5"><span style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.4rem;color:rgba(42,39,37,0.3)">Créon</span></div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- STICKR! -->
+<section class="section stickr" id="stickr">
+  <div class="stickr-top">
+    <div>
+      <div class="stickr-badge">Stickr!</div>
+      <h2>Your image.<br><em>Stuck</em> to everything.</h2>
+    </div>
+    <p>Upload your artwork, pick your size and finish — we'll cut, print and ship custom stickers and decals made to last. Perfect for laptops, water bottles, gear, products, and anything else worth marking as yours.</p>
+  </div>
+
+  <div class="stickr-grid">
+
+    <!-- INFO CARDS -->
+    <div class="stickr-info">
+      <div class="info-card">
+        <div class="info-card-icon">🖨️</div>
+        <div>
+          <h4>High-quality print</h4>
+          <p>Vibrant, fade-resistant ink on premium vinyl stock. Kiss-cut or die-cut, your choice.</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">✂️</div>
+        <div>
+          <h4>Custom cut to shape</h4>
+          <p>We cut around your design precisely — not just a rectangle. Your shape, your sticker.</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">📐</div>
+        <div>
+          <h4>Any size, any quantity</h4>
+          <p>From one sticker to a hundred. Small runs welcome — no minimum order.</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">💬</div>
+        <div>
+          <h4>We'll be in touch</h4>
+          <p>After you submit, we'll confirm your order details and send a proof before printing.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER FORM -->
+    <div>
+      <!-- Upload -->
+      <div class="upload-area" id="dropzone">
+        <input type="file" id="fileInput" accept=".png,.jpg,.jpeg,.svg,.pdf,.ai,.eps" />
+        <div class="upload-icon">📁</div>
+        <div class="upload-title">Drop your file here</div>
+        <div class="upload-sub">or click to browse</div>
+        <div class="upload-formats">
+          <span class="fmt-tag">PNG</span>
+          <span class="fmt-tag">SVG</span>
+          <span class="fmt-tag">PDF</span>
+          <span class="fmt-tag">AI</span>
+          <span class="fmt-tag">EPS</span>
+          <span class="fmt-tag">JPG</span>
+        </div>
+      </div>
+
+      <div class="upload-preview" id="previewBox">
+        <img class="preview-thumb" id="previewImg" src="" alt=""/>
+        <div>
+          <div class="preview-name" id="previewName"></div>
+          <div class="preview-size" id="previewSize"></div>
+        </div>
+        <button class="preview-remove" id="removeFile" title="Remove">✕</button>
+      </div>
+
+      <!-- Form fields -->
+      <div class="order-form" id="orderForm">
+        <div class="form-group full">
+          <label>Size</label>
+          <div class="size-grid" id="sizeGrid">
+            <label class="size-opt selected">
+              <input type="radio" name="size" value="small" checked/>
+              <div class="size-label">Small</div>
+              <div class="size-sub">5 × 5 cm</div>
+            </label>
+            <label class="size-opt">
+              <input type="radio" name="size" value="medium"/>
+              <div class="size-label">Medium</div>
+              <div class="size-sub">8 × 8 cm</div>
+            </label>
+            <label class="size-opt">
+              <input type="radio" name="size" value="large"/>
+              <div class="size-label">Large</div>
+              <div class="size-sub">12 × 12 cm</div>
+            </label>
+            <label class="size-opt">
+              <input type="radio" name="size" value="custom"/>
+              <div class="size-label">Custom</div>
+              <div class="size-sub">Tell us below</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label>Finish</label>
+          <div class="finish-grid" id="finishGrid">
+            <label class="finish-opt selected">
+              <input type="radio" name="finish" value="glossy" checked/>
+              <div class="finish-icon">✨</div>
+              <div class="finish-label">Glossy</div>
+              <div class="finish-sub">Shiny & vivid</div>
+            </label>
+            <label class="finish-opt">
+              <input type="radio" name="finish" value="matte"/>
+              <div class="finish-icon">🌫️</div>
+              <div class="finish-label">Matte</div>
+              <div class="finish-sub">Soft & subtle</div>
+            </label>
+            <label class="finish-opt">
+              <input type="radio" name="finish" value="holographic"/>
+              <div class="finish-icon">🌈</div>
+              <div class="finish-label">Holo</div>
+              <div class="finish-sub">Show off</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" placeholder="e.g. 10" min="1" id="qty"/>
+        </div>
+
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" placeholder="First name" id="name"/>
+        </div>
+
+        <div class="form-group full">
+          <label>Email</label>
+          <input type="email" placeholder="we'll send your proof here" id="email"/>
+        </div>
+
+        <div class="form-group full">
+          <label>Notes (optional)</label>
+          <textarea placeholder="Custom dimensions, special requests, anything we should know…" id="notes"></textarea>
+        </div>
+
+        <div class="submit-row">
+          <button class="btn-submit" id="submitBtn">
+            Send Order Request →
+          </button>
+          <p class="submit-note">No payment now. We'll confirm<br>details and quote before anything.</p>
+        </div>
+      </div>
+
+      <div class="success-msg" id="successMsg">
+        <h4>Order request received! 🎉</h4>
+        <p>Thanks — we'll review your file and be in touch within 24 hours with a proof and quote.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- WHAT ELSE WE MAKE -->
+<section class="section makes" id="makes">
+  <div class="makes-header">
+    <div class="section-label">What We Make</div>
+    <h2>Stickr! is just the<br><em>beginning.</em></h2>
+    <p>Créon is one person with a lot of tools, a lot of curiosity, and a habit of making things. Here's what's in the mix right now.</p>
+  </div>
+
+  <div class="makes-grid">
+    <div class="make-card">
+      <div class="make-card-top mc1"><span>🖨️</span></div>
+      <div class="make-card-body">
+        <h3>Stickr! — Custom Stickers</h3>
+        <p>Laptop stickers, decals, and custom vinyl cuts. Your design, printed and cut to shape.</p>
+        <span class="make-card-tag">Available now</span>
+      </div>
+    </div>
+    <div class="make-card">
+      <div class="make-card-top mc2"><span>🧊</span></div>
+      <div class="make-card-body">
+        <h3>3D Modelling & Printing</h3>
+        <p>Functional parts, decorative objects, product prototypes. Designed from scratch or printed to spec.</p>
+        <span class="make-card-tag">Coming soon</span>
+      </div>
+    </div>
+    <div class="make-card">
+      <div class="make-card-top mc3"><span>✂️</span></div>
+      <div class="make-card-body">
+        <h3>Cricut Crafts</h3>
+        <p>Precision-cut cards, iron-on transfers, custom signage, paper art and more from the Cricut.</p>
+        <span class="make-card-tag">Coming soon</span>
+      </div>
+    </div>
+    <div class="make-card">
+      <div class="make-card-top mc4"><span>📦</span></div>
+      <div class="make-card-body">
+        <h3>Packaging Design</h3>
+        <p>Custom packaging that makes products feel like gifts. Designed, cut and assembled by hand.</p>
+        <span class="make-card-tag">Coming soon</span>
+      </div>
+    </div>
+    <div class="make-card">
+      <div class="make-card-top mc5"><span>🎁</span></div>
+      <div class="make-card-body">
+        <h3>Custom Gifts & Products</h3>
+        <p>Personalised, made-to-order items for people who want something more thoughtful than off-the-shelf.</p>
+        <span class="make-card-tag">Coming soon</span>
+      </div>
+    </div>
+    <div class="make-card">
+      <div class="make-card-top mc6">
+        <span style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.1rem;color:rgba(42,39,37,0.4)">& more</span>
+      </div>
+      <div class="make-card-body">
+        <h3>Whatever's Next</h3>
+        <p>New tools, new techniques, new ideas. Créon is always growing — follow along and see what happens.</p>
+        <span class="make-card-tag">Always evolving</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-text">
+    <div class="section-label">About Créon</div>
+    <h2>A studio of<br><em>one</em> — for now.</h2>
+    <p>Créon is a <strong>design studio built around making.</strong> Not just designing things on screens, but actually producing them — with hands, tools, and a real interest in craft.</p>
+    <p>Right now it's just me, with a burning passion for creating things and a growing set of tools to do it with. <strong>Stickr!</strong> is the first product, but the vision is bigger: a place where good design feels accessible, tangible, and genuinely useful.</p>
+    <p>Because <strong>good design should feel like it belongs in your life.</strong></p>
+  </div>
+  <div class="about-right">
+    <div class="about-quote">"Because good design should feel like it belongs in your life."</div>
+    <div class="about-attr">— Créon Design Studio</div>
+  </div>
+</section>
+
+<!-- CONTACT BAR -->
+<div class="contact-bar" id="contact">
+  <div>
+    <h3>Got something in <em>mind?</em></h3>
+    <p>Reach out — whether it's a sticker order, a custom project, or just a hello.</p>
+  </div>
+  <a href="mailto:hello@creon.studio" class="btn btn-dark">hello@creon.studio →</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Créon</div>
+  <ul class="footer-links">
+    <li><a href="#stickr">Stickr!</a></li>
+    <li><a href="#makes">What We Make</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 Créon Design Studio</div>
+</footer>
+
+<script>
+  // ── File upload interaction
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const previewBox = document.getElementById('previewBox');
+  const previewImg = document.getElementById('previewImg');
+  const previewName = document.getElementById('previewName');
+  const previewSize = document.getElementById('previewSize');
+  const removeFile = document.getElementById('removeFile');
+
+  function formatBytes(b) {
+    return b < 1024*1024 ? (b/1024).toFixed(1)+' KB' : (b/1024/1024).toFixed(1)+' MB';
+  }
+
+  function showPreview(file) {
+    previewName.textContent = file.name;
+    previewSize.textContent = formatBytes(file.size);
+    if (file.type.startsWith('image/')) {
+      const r = new FileReader();
+      r.onload = e => { previewImg.src = e.target.result; previewImg.style.display='block'; };
+      r.readAsDataURL(file);
+    } else {
+      previewImg.style.display = 'none';
+    }
+    previewBox.classList.add('visible');
+  }
+
+  fileInput.addEventListener('change', e => {
+    if (e.target.files[0]) showPreview(e.target.files[0]);
+  });
+
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault(); dropzone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) { fileInput.files = e.dataTransfer.files; showPreview(file); }
+  });
+
+  removeFile.addEventListener('click', () => {
+    fileInput.value = '';
+    previewBox.classList.remove('visible');
+    previewImg.src = '';
+  });
+
+  // ── Size / finish selectors
+  document.querySelectorAll('#sizeGrid .size-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('#sizeGrid .size-opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+  document.querySelectorAll('#finishGrid .finish-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('#finishGrid .finish-opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+
+  // ── Form submit
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const qty = document.getElementById('qty').value;
+    if (!name || !email || !qty) {
+      alert('Please fill in your name, email and quantity before submitting.');
+      return;
+    }
+    document.getElementById('orderForm').style.display = 'none';
+    document.getElementById('successMsg').classList.add('visible');
+  });
+</script>
+
+</body>
+</html>
